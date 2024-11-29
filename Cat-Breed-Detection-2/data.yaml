@@ -1,0 +1,23 @@
+names:
+- Abyssinian
+- Bengal
+- Birman
+- Bombay
+- British_Shorthair
+- Egyptian_Mau
+- Maine_Coon
+- Persian
+- Ragdoll
+- Russian_Blue
+- Siamese
+- Sphynx
+nc: 12
+roboflow:
+  license: CC BY 4.0
+  project: cat-breed-detection-2snvs
+  url: https://universe.roboflow.com/machine-learning-qir8h/cat-breed-detection-2snvs/dataset/2
+  version: 2
+  workspace: machine-learning-qir8h
+test: ../test/images
+train: ../train/images
+val: ../valid/images
