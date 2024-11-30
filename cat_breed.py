@@ -1,36 +1,54 @@
+import streamlit as st
 from ultralytics import YOLO
 import cv2
+import numpy as np
 
-# Load the model
-model = YOLO("cat_breed_model.pt")
+def main():
+    st.title("YOLO Cat Breed Detection")
 
-# Initialize webcam
-cap = cv2.VideoCapture(0)
+    # Sidebar for settings
+    st.sidebar.title("Settings")
+    confidence_threshold = st.sidebar.slider("Confidence Threshold", 0.0, 1.0, 0.5, 0.01)
 
-try:
+    # Unique key for the "Stop" button
+    stop_button = st.sidebar.button("Stop", key="stop_button")
+
+    # Webcam capture
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        st.error("Error: Could not open webcam.")
+        return
+
+    # Load the YOLO model
+    model = YOLO("cat_breed_22k.pt")
+
+    # Stream video
+    stframe = st.empty()  # Placeholder for the video stream
+
     while True:
-        # Capture frame-by-frame
         ret, frame = cap.read()
         if not ret:
-            print("Failed to grab frame")
+            st.warning("Failed to grab frame. Is your webcam connected?")
             break
 
-        # Use the model to make a prediction on the captured frame
-        result = model.predict(frame)
+        # Make predictions
+        results = model.predict(frame, conf=confidence_threshold)
 
-        # Display the result
-        cv2.imshow("YOLO Prediction", result[0].plot())
+        # Draw predictions on the frame
+        annotated_frame = results[0].plot()
 
-        # Print result (optional)
-        print(result)
+        # Convert frame to RGB for Streamlit display
+        annotated_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
 
-        # Break the loop on 'q' key press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        # Display the frame in Streamlit
+        stframe.image(annotated_frame, channels="RGB", use_container_width=True)
+
+        # Check if the user pressed the stop button
+        if stop_button:
             break
-except KeyboardInterrupt:
-    print("Stopping the script...")
-finally:
-    # Release the capture and destroy all windows
+
+    # Release resources
     cap.release()
-    cv2.destroyAllWindows()
-    print("Resources released and script stopped.")
+
+if __name__ == "__main__":
+    main()
