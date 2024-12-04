@@ -92,7 +92,7 @@ def main():
     )
 
     # YOLO model loading
-    model = YOLO("cat_breed_epochs30.pt")
+    model = YOLO("dec4.pt")
 
     # Options for input mode
     st.sidebar.header("📷 Choose Input Mode")
