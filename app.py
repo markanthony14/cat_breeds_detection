@@ -97,7 +97,7 @@ def main():
         filtered_results = []
         for result in results:
             # Exclude predictions labeled as "Sphynx"
-            filtered_boxes = [box for box in result.boxes if result.names[int(box.cls)] not in ["Sphynx"]]
+            filtered_boxes = [box for box in result.boxes if result.names[int(box.cls)] not in [""]]
             if filtered_boxes:
                 result.boxes = filtered_boxes
                 filtered_results.append(result)
