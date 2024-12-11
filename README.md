@@ -76,7 +76,7 @@
 
 ## 🌟 Demo
 
-![App Interface](demo_screenshot.png)
+![App Interface](DEMO.png)
 
 ## 🐾 Contributing
 
