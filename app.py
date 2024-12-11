@@ -3,7 +3,6 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 from PIL import Image
-import threading
 import os
 import pygame
 
@@ -85,14 +84,24 @@ def main():
         - Ragdoll  
         - Russian Blue  
         - Siamese  
-        - Sphynx  
         - American Shorthair  
         - Scottish Fold  
         """
     )
 
     # YOLO model loading
-    model = YOLO("cat_breed_10epochs.pt")
+    model = YOLO("cat_breed_15epochs.pt")
+
+    # Filter out Sphynx class from results
+    def filter_results(results):
+        filtered_results = []
+        for result in results:
+            # Exclude predictions labeled as "Sphynx"
+            filtered_boxes = [box for box in result.boxes if result.names[int(box.cls)] not in ["Sphynx"]]
+            if filtered_boxes:
+                result.boxes = filtered_boxes
+                filtered_results.append(result)
+        return filtered_results
 
     # Options for input mode
     st.sidebar.header("📷 Choose Input Mode")
@@ -124,9 +133,12 @@ def main():
 
                 # Make predictions
                 results = model.predict(frame, conf=confidence_threshold)
+                results = filter_results(results)
 
                 # Draw predictions on the frame
-                annotated_frame = results[0].plot()
+                annotated_frame = frame  # Default frame if no detections remain
+                if results:
+                    annotated_frame = results[0].plot()
 
                 # Convert frame to RGB for Streamlit display
                 annotated_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
@@ -159,9 +171,12 @@ def main():
 
             # Make predictions
             results = model.predict(image, conf=confidence_threshold)
+            results = filter_results(results)
 
             # Draw predictions on the image
-            annotated_image = results[0].plot()
+            annotated_image = image  # Default image if no detections remain
+            if results:
+                annotated_image = results[0].plot()
 
             # Convert to RGB for Streamlit display
             annotated_image = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
